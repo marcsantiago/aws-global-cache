@@ -14,9 +14,10 @@ const (
 )
 
 type Configuration struct {
-	awsRegion AWSRegion
-	writer    *redis.Client
-	readers   mappedRedisRegions
+	masterNodeAWSRegion       AWSRegion
+	localEnvironmentAWSRegion AWSRegion
+	writer                    *redis.Client
+	readers                   mappedRedisRegions
 }
 
 type ReaderRegionMapper struct {
@@ -43,9 +44,10 @@ func NewConfiguration(awsRegion string, writer *redis.Client, readers ...ReaderR
 		readerMap[castRegion(localRegion)] = r.Client
 	}
 	return &Configuration{
-		awsRegion: castRegion(currentRegion),
-		writer:    writer,
-		readers:   readerMap,
+		masterNodeAWSRegion:       USEast1, // defaulting this for my use case
+		localEnvironmentAWSRegion: castRegion(currentRegion),
+		writer:                    writer,
+		readers:                   readerMap,
 	}
 }
 
@@ -71,11 +73,15 @@ func castRegion(awsRegion string) AWSRegion {
 // intend to do is a write or read operation, this is because the AWS Global Cache is set up as a “active-passive” database
 // meaning that there is only 1 writer and many readers
 func (c *Configuration) RetrieveRedisClient(operation Operation) *redis.Client {
+	if c.localEnvironmentAWSRegion == c.masterNodeAWSRegion {
+		return c.writer
+	}
+
 	switch operation {
 	case Write:
 		return c.writer
 	case Read:
-		if r, ok := c.readers[c.awsRegion]; ok {
+		if r, ok := c.readers[c.localEnvironmentAWSRegion]; ok {
 			return r
 		}
 		return c.writer
