@@ -43,12 +43,12 @@ func TestConfiguration_RetrieveRedisClient(t *testing.T) {
 		{
 			name: "should pick the reader because the operation was set to read",
 			fields: fields{
-				awsRegion: USEast1,
+				awsRegion: USWest1,
 				writer: redis.NewClient(&redis.Options{
 					Addr: "writer_client",
 				}),
 				readers: mappedRedisRegions{
-					USEast1: redis.NewClient(&redis.Options{
+					USWest1: redis.NewClient(&redis.Options{
 						Addr: "reader_client",
 					}),
 				},
@@ -100,13 +100,34 @@ func TestConfiguration_RetrieveRedisClient(t *testing.T) {
 				Addr: "writer_client_east",
 			}),
 		},
+		{
+			name: "should pick the writer even though the operation is set to READ because we are in the master location",
+			fields: fields{
+				awsRegion: USEast1,
+				writer: redis.NewClient(&redis.Options{
+					Addr: "writer_client_east",
+				}),
+				readers: mappedRedisRegions{
+					USEast1: redis.NewClient(&redis.Options{
+						Addr: "reader_client_east",
+					}),
+					USWest1: redis.NewClient(&redis.Options{
+						Addr: "reader_client_west",
+					}),
+				},
+			},
+			args: args{operation: Read},
+			want: redis.NewClient(&redis.Options{
+				Addr: "writer_client_east",
+			}),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Configuration{
-				awsRegion: tt.fields.awsRegion,
-				writer:    tt.fields.writer,
-				readers:   tt.fields.readers,
+				localEnvironmentAWSRegion: tt.fields.awsRegion,
+				writer:                    tt.fields.writer,
+				readers:                   tt.fields.readers,
 			}
 			if got := c.RetrieveRedisClient(tt.args.operation); got.Options().Addr != tt.want.Options().Addr {
 				t.Errorf("RetrieveRedisClient() = %v, want %v", got.Options().Addr, tt.want.Options().Addr)
@@ -122,7 +143,7 @@ func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
 	var client *redis.Client
 	_ = client
 	c := &Configuration{
-		awsRegion: USEast1,
+		localEnvironmentAWSRegion: USEast1,
 		writer: redis.NewClient(&redis.Options{
 			Addr: "writer_client",
 		}),
@@ -141,14 +162,40 @@ func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
 	}
 }
 
-//BenchmarkName_RetrieveRedisClientReader-12                 	358784646	         3.35 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientReader-12                 	358238107	         3.35 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientReader-12                 	359313612	         3.34 ns/op	       0 B/op	       0 allocs/op
+//BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.328 ns/op	       0 B/op	       0 allocs/op
+//BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.334 ns/op	       0 B/op	       0 allocs/op
+//BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.330 ns/op	       0 B/op	       0 allocs/op
+func BenchmarkName_RetrieveRedisClientReadWithWriter(b *testing.B) {
+	var client *redis.Client
+	_ = client
+	c := &Configuration{
+		localEnvironmentAWSRegion: USEast1,
+		writer: redis.NewClient(&redis.Options{
+			Addr: "writer_client",
+		}),
+		readers: mappedRedisRegions{
+			USEast1: redis.NewClient(&redis.Options{
+				Addr: "reader_client_east",
+			}),
+			USWest1: redis.NewClient(&redis.Options{
+				Addr: "reader_client_west",
+			}),
+		},
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		client = c.RetrieveRedisClient(Read)
+	}
+}
+
+//BenchmarkName_RetrieveRedisClientReader-12                 	308930834	         3.88 ns/op	       0 B/op	       0 allocs/op
+//BenchmarkName_RetrieveRedisClientReader-12                 	309728967	         3.86 ns/op	       0 B/op	       0 allocs/op
+//BenchmarkName_RetrieveRedisClientReader-12                 	310779890	         3.87 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientReader(b *testing.B) {
 	var client *redis.Client
 	_ = client
 	c := &Configuration{
-		awsRegion: USEast1,
+		localEnvironmentAWSRegion: USWest1,
 		writer: redis.NewClient(&redis.Options{
 			Addr: "writer_client",
 		}),
@@ -174,7 +221,7 @@ func BenchmarkName_RetrieveRedisClientWriterDefaultReader(b *testing.B) {
 	var client *redis.Client
 	_ = client
 	c := &Configuration{
-		awsRegion: EUCentral1,
+		localEnvironmentAWSRegion: EUCentral1,
 		writer: redis.NewClient(&redis.Options{
 			Addr: "writer_client",
 		}),
