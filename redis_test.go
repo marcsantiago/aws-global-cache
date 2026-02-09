@@ -1,14 +1,14 @@
 package awsglobalcache
 
 import (
-	"io/ioutil"
+	"io"
 	"testing"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 )
 
 func init() {
-	WarningLogger.SetOutput(ioutil.Discard)
+	WarningLogger.SetOutput(io.Discard)
 }
 
 func TestConfiguration_RetrieveRedisClient(t *testing.T) {
@@ -136,9 +136,9 @@ func TestConfiguration_RetrieveRedisClient(t *testing.T) {
 	}
 }
 
-//BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.511 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.510 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.509 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.511 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.510 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.509 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
 	var client *redis.Client
 	_ = client
@@ -162,9 +162,9 @@ func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
 	}
 }
 
-//BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.328 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.334 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.330 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.328 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.334 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.330 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientReadWithWriter(b *testing.B) {
 	var client *redis.Client
 	_ = client
@@ -188,9 +188,9 @@ func BenchmarkName_RetrieveRedisClientReadWithWriter(b *testing.B) {
 	}
 }
 
-//BenchmarkName_RetrieveRedisClientReader-12                 	308930834	         3.88 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientReader-12                 	309728967	         3.86 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientReader-12                 	310779890	         3.87 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientReader-12                 	308930834	         3.88 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientReader-12                 	309728967	         3.86 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientReader-12                 	310779890	         3.87 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientReader(b *testing.B) {
 	var client *redis.Client
 	_ = client
@@ -214,9 +214,9 @@ func BenchmarkName_RetrieveRedisClientReader(b *testing.B) {
 	}
 }
 
-//BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196845808	         6.06 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196744748	         6.06 ns/op	       0 B/op	       0 allocs/op
-//BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196640210	         6.09 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196845808	         6.06 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196744748	         6.06 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196640210	         6.09 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientWriterDefaultReader(b *testing.B) {
 	var client *redis.Client
 	_ = client
