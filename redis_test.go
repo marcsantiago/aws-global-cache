@@ -140,8 +140,6 @@ func TestConfiguration_RetrieveRedisClient(t *testing.T) {
 // BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.510 ns/op	       0 B/op	       0 allocs/op
 // BenchmarkName_RetrieveRedisClientWriter-12                 	1000000000	         0.509 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
-	var client *redis.Client
-	_ = client
 	c := &Configuration{
 		localEnvironmentAWSRegion: USEast1,
 		writer: redis.NewClient(&redis.Options{
@@ -156,9 +154,9 @@ func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
 			}),
 		},
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		client = c.RetrieveRedisClient(Write)
+
+	for b.Loop() {
+		_ = c.RetrieveRedisClient(Write)
 	}
 }
 
@@ -166,8 +164,6 @@ func BenchmarkName_RetrieveRedisClientWriter(b *testing.B) {
 // BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.334 ns/op	       0 B/op	       0 allocs/op
 // BenchmarkName_RetrieveRedisClientReader-12                 	1000000000	         0.330 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientReadWithWriter(b *testing.B) {
-	var client *redis.Client
-	_ = client
 	c := &Configuration{
 		localEnvironmentAWSRegion: USEast1,
 		writer: redis.NewClient(&redis.Options{
@@ -182,9 +178,9 @@ func BenchmarkName_RetrieveRedisClientReadWithWriter(b *testing.B) {
 			}),
 		},
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		client = c.RetrieveRedisClient(Read)
+
+	for b.Loop() {
+		_ = c.RetrieveRedisClient(Read)
 	}
 }
 
@@ -192,8 +188,6 @@ func BenchmarkName_RetrieveRedisClientReadWithWriter(b *testing.B) {
 // BenchmarkName_RetrieveRedisClientReader-12                 	309728967	         3.86 ns/op	       0 B/op	       0 allocs/op
 // BenchmarkName_RetrieveRedisClientReader-12                 	310779890	         3.87 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientReader(b *testing.B) {
-	var client *redis.Client
-	_ = client
 	c := &Configuration{
 		localEnvironmentAWSRegion: USWest1,
 		writer: redis.NewClient(&redis.Options{
@@ -208,9 +202,9 @@ func BenchmarkName_RetrieveRedisClientReader(b *testing.B) {
 			}),
 		},
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		client = c.RetrieveRedisClient(Read)
+
+	for b.Loop() {
+		_ = c.RetrieveRedisClient(Read)
 	}
 }
 
@@ -218,8 +212,6 @@ func BenchmarkName_RetrieveRedisClientReader(b *testing.B) {
 // BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196744748	         6.06 ns/op	       0 B/op	       0 allocs/op
 // BenchmarkName_RetrieveRedisClientWriterDefaultReader-12    	196640210	         6.09 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkName_RetrieveRedisClientWriterDefaultReader(b *testing.B) {
-	var client *redis.Client
-	_ = client
 	c := &Configuration{
 		localEnvironmentAWSRegion: EUCentral1,
 		writer: redis.NewClient(&redis.Options{
@@ -234,8 +226,8 @@ func BenchmarkName_RetrieveRedisClientWriterDefaultReader(b *testing.B) {
 			}),
 		},
 	}
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		client = c.RetrieveRedisClient(Read)
+
+	for b.Loop() {
+		_ = c.RetrieveRedisClient(Read)
 	}
 }
