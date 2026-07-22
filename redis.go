@@ -58,7 +58,7 @@ func castRegion(awsRegion string) AWSRegion {
 		region = USEast1
 	case "us-west-1", "us-west-2":
 		region = USWest1
-	case "ap-south-1", "  ap-southeast-1", "ap-southeast-2":
+	case "ap-south-1", "ap-southeast-1", "ap-southeast-2", "ap-southeast-5":
 		region = Apac
 	case "eu-central-1":
 		region = EUCentral1
